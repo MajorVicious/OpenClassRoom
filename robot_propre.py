@@ -104,7 +104,7 @@ class GameMap(object):
         return False
 
 m = GameMap()
-m.load("cartes")
+m.load("cartes.txt")
 m.show()
 
 while True:
