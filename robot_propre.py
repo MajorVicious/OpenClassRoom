@@ -51,8 +51,7 @@ class Enemy(object):
         goal = m.objects['robot'].pos
         position = m.objects['enemy'].pos
         choix = []
-        if goal == position:
-            return True
+        
 
         if goal[0] != position[0] or goal[1] != position[1]:
             if goal[0] != position[0]:
