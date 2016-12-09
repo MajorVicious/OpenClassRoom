@@ -35,25 +35,21 @@ class Robot(object):
         self.x = x
         self.y = y
 
-class Enemy(object):
+class Enemy(Robot):
 
+    def suivant(self, direction):
+        dx, dy = direction
+        return self.x + dx, self.y + dy
 
-    def __init__(self, x, y, m):
-        self.x = x
-        self.y = y
-        self.m = m
+    def inverse(self, direction):
+        dx, dy = direction
+        return self.x - dx, self.y - dy
 
-    @property
-    def pos(self):
-        return self.x, self.y
-
-    def intelligence(self):
-        goal = m.objects['robot'].pos
-        position = m.objects['enemy'].pos
+    def intelligence(self, player, enemy, obstacle):
+        goal = player.pos
+        position = enemy.pos
         choix = []
-        
-
-        if goal[0] != position[0] or goal[1] != position[1]:
+        if goal != position:
             if goal[0] != position[0]:
                 choix = []
                 if goal[0] <= position[0]:
@@ -67,18 +63,15 @@ class Enemy(object):
                     choix.append((0, -1))
                 elif goal[1] >= position[1]:
                     choix.append((0, 1))
-        direction = random.choice(choix)
-        dx, dy = direction[0], direction[1]
-        return self.x + dx, self.y + dy
-
-    def move(self, x, y):
-        self.x = x
-        self.y = y
-        
-
-        
-
-
+        if choix == []:
+            return self.x, self.y
+        else:
+            direction = random.choice(choix)
+            if enemy.suivant(direction) in obstacle:
+                return enemy.inverse(direction)
+            else:
+                return enemy.suivant(direction)
+                
 
 class GameMap(object):
 
@@ -132,7 +125,7 @@ class GameMap(object):
             if symbol == ROBOT_START:
                 self.objects['robot'] = Robot(x, y)
             elif symbol == ENEMY_START:
-                self.objects['enemy'] = Enemy(x, y, m)
+                self.objects['enemy'] = Enemy(x, y)
             elif symbol == WALL:
                 self.obstacles.append((x, y))
             elif symbol == EXIT:
@@ -149,7 +142,7 @@ class GameMap(object):
         robot = self.player
         enemy = self.enemy
         next_position = robot.next(dest)
-        enemy.move(*enemy.intelligence())
+        enemy.move(*enemy.intelligence(robot, enemy, self.obstacles))
         if self.is_obstacle(*next_position):
             print("Pas par la !")
         elif self.is_sortie(*next_position):
