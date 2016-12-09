@@ -37,6 +37,7 @@ class Robot(object):
 
 class Enemy(Robot):
 
+
     def suivant(self, direction):
         dx, dy = direction
         return self.x + dx, self.y + dy
@@ -148,6 +149,11 @@ class GameMap(object):
         elif self.is_sortie(*next_position):
             print('Bravo !')
             robot.move(*next_position)
+            return True
+        elif self.player.pos == self.enemy.pos:
+            print("-----------------------------------")
+            print("Vous venez de vous faire attraper !")
+            print("-----------------------------------")
             return True
         else:
             robot.move(*next_position)
