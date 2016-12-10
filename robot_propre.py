@@ -69,9 +69,9 @@ class Enemy(Robot):
         dx, dy = direction
         return self.x - dx, self.y - dy
 
-    def intelligence(self, player, enemy, obstacle):
+    def intelligence(self, player, obstacle):
         goal = player.pos
-        position = enemy.pos
+        position = self.pos
         choix = []
         if goal != position:
             if goal[0] != position[0]:
@@ -91,10 +91,10 @@ class Enemy(Robot):
             return self.x, self.y
         else:
             direction = random.choice(choix)
-            if enemy.suivant(direction) in obstacle:
-                return enemy.inverse(direction)
+            if self.suivant(direction) in obstacle:
+                return self.inverse(direction)
             else:
-                return enemy.suivant(direction)
+                return self.suivant(direction)
 
 class GameMap(object):
 
@@ -168,7 +168,7 @@ class GameMap(object):
         next_position = robot.next(*reader)
         if self.is_obstacle(*next_position):
             print("Pas par la !")
-            enemy.move(*enemy.intelligence(robot, enemy, self.obstacles))
+            enemy.move(*enemy.intelligence(robot, self.obstacles))
         elif self.is_sortie(*next_position):
             print('Bravo !')
             robot.move(*next_position)
@@ -179,7 +179,7 @@ class GameMap(object):
             print("-----------------------------------")
             return True
         else:
-            enemy.move(*enemy.intelligence(robot, enemy, self.obstacles))
+            enemy.move(*enemy.intelligence(robot, self.obstacles))
             robot.move(*next_position)
         return False
 
