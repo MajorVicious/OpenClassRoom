@@ -26,9 +26,33 @@ class Robot(object):
     def pos(self):
         return self.x, self.y
 
-    def next(self, direction):
+    def lecteur(self, direction):
         direction = direction.upper()
-        dx, dy = self.deltas.get(direction, (0, 0))
+        numbers = "123456789"
+        rapide = []
+        multiple = ""
+        nouvelle_direction = ""
+        for element in direction:
+            rapide.append(element)
+            for item in rapide:
+                if item in numbers:
+                    multiple = item
+                else:
+                    nouvelle_direction = item
+        return nouvelle_direction, multiple
+
+
+    def next(self, direction, multiple):
+        if multiple == "":
+            dx, dy = self.deltas.get(direction, (0, 0))
+            return self.x + dx, self.y + dy
+        else:
+            if direction == "Z" or direction == "S":
+                dx, dy = self.deltas.get(direction, (0, 0))
+                dy *= int(multiple)
+            elif direction == "Q" or direction == "D":
+                dx, dy = self.deltas.get(direction, (0, 0))
+                dx *= int(multiple)
         return self.x + dx, self.y + dy
 
     def move(self, x, y):
@@ -36,7 +60,6 @@ class Robot(object):
         self.y = y
 
 class Enemy(Robot):
-
 
     def suivant(self, direction):
         dx, dy = direction
@@ -72,7 +95,6 @@ class Enemy(Robot):
                 return enemy.inverse(direction)
             else:
                 return enemy.suivant(direction)
-                
 
 class GameMap(object):
 
@@ -142,10 +164,11 @@ class GameMap(object):
         dest = input("Destination ? ({})".format('/'.join(Robot.deltas)))
         robot = self.player
         enemy = self.enemy
-        next_position = robot.next(dest)
-        enemy.move(*enemy.intelligence(robot, enemy, self.obstacles))
+        reader = robot.lecteur(dest)
+        next_position = robot.next(*reader)
         if self.is_obstacle(*next_position):
             print("Pas par la !")
+            enemy.move(*enemy.intelligence(robot, enemy, self.obstacles))
         elif self.is_sortie(*next_position):
             print('Bravo !')
             robot.move(*next_position)
@@ -156,6 +179,7 @@ class GameMap(object):
             print("-----------------------------------")
             return True
         else:
+            enemy.move(*enemy.intelligence(robot, enemy, self.obstacles))
             robot.move(*next_position)
         return False
 
