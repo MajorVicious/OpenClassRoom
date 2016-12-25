@@ -183,12 +183,13 @@ class GameMap(object):
             robot.move(*next_position)
         return False
 
-m = GameMap()
-m.load("cartes.txt")
-m.show()
-
-while True:
-    stop = m.logic()
+if __name__ == '__main__':
+    m = GameMap()
+    m.load("cartes.txt")
     m.show()
-    if stop:
-        break
+
+    while True:
+        stop = m.logic()
+        m.show()
+        if stop:
+            break
